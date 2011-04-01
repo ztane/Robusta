@@ -1,25 +1,21 @@
 appConfig  = require "robusta/config/appConfig"
-cookies    = require "robusta/cookies"
 controller = require "robusta/controller"
 expose     = controller.expose
 
+# An example config:
+# serve public data from data/public subdirectory,
+# and automatically compile coffeescripts from client
+# subdirectory to be sent to client side
 config =
         coffeeDir: __dirname + '/client'
         publicDir: __dirname + '/data/public'
 
-factory = new appConfig.ServerCreator config
-
-app = factory.createServer()
-
-class UserController extends controller.Controller
+class SubController extends controller.Controller
         constructor: ->
                 @init()
 
         index: expose (req, res) ->
-                res.send("Hello world")
-
-        foo: expose (req, res) ->
-                res.send("Another method")
+                res.send("Hello world from SubController")
 
 class TestController extends controller.Controller
         constructor: ->
@@ -29,12 +25,14 @@ class TestController extends controller.Controller
                 res.send("Hello world")
 
         foo: expose (req, res, parts) ->
-                res.send("Another method" + parts)
+                res.send("Another method with the remaining URI components " + parts)
 
-        users: new UserController()
+        subcontroller: new SubController()
 
 root = new TestController()
-console.log root.exposed
+
+factory = new appConfig.ServerCreator config
+app = factory.createServer()
 
 app.get /\/(.*)/, (req, res, next) ->
         controller.dispatch(req, res, root, next)
