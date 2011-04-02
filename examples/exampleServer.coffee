@@ -1,6 +1,5 @@
-appConfig  = require "robusta/config/appConfig"
-controller = require "robusta/controller"
-expose     = controller.expose
+robusta    = require 'robusta'
+expose     = robusta.controller.expose
 
 # An example config:
 # serve public data from data/public subdirectory,
@@ -10,14 +9,14 @@ config =
         coffeeDir: __dirname + '/client'
         publicDir: __dirname + '/data/public'
 
-class SubController extends controller.Controller
+class SubController extends robusta.controller.Controller
         constructor: ->
                 @init()
 
         index: expose (req, res) ->
                 res.send("Hello world from SubController")
 
-class TestController extends controller.Controller
+class TestController extends robusta.controller.Controller
         constructor: ->
                 @init()
 
@@ -31,11 +30,11 @@ class TestController extends controller.Controller
 
 root = new TestController()
 
-factory = new appConfig.ServerCreator config
+factory = new robusta.config.ServerCreator config
 app = factory.createServer()
 
 app.get /\/(.*)/, (req, res, next) ->
-        controller.dispatch(req, res, root, next)
+        robusta.controller.dispatch(req, res, root, next)
 
 app.listen 8000
 console.log "Server listening to http://localhost:8000"
