@@ -1,0 +1,17 @@
+{
+  "name": "robusta",
+  "description": "TurboGears 2 inspired Node.js framework built on Express",
+  "version": "0.1",
+  "author": "Antti Haapala <antti@haapala.name>",
+  "contributors": [
+    { "name": "Ilja Everilä", "email": "saarni@gmail.com" }
+  ],
+  "dependencies": {
+    "express": ">= 2.0.0 < 3.0.0"
+  },
+  "keywords": ["framework", "turbogears", "web", "rest", "restful"],
+  "repository": "git://github.com/ztane/Robusta",
+  "main": "index",
+  "bin": { "robusta": "./bin/robusta" },
+  "engines": { "node": ">= 0.4.1 < 0.5.0" }
+}

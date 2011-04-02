@@ -1,0 +1,12 @@
+#!/usr/bin/env coffee
+
+abort = (message) ->
+	console.error message
+	process.exit 1
+
+usage = """
+    \033[31;1mUsage\033[0m: robusta command [configuration] [options]
+"""
+
+abort usage
+
