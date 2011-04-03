@@ -23,6 +23,18 @@ class ServerFactory
 
         util.getFactoryFunction(@config.rootController, @config.here)
 
+    configureMongoose: ->
+        mongoose = require 'mongoose'
+        if not @config.mongoose.modelRoot?
+            throw new Error("No mongoose.modelRoot specified in config")
+
+        if not @config.mongoose.connectionUri?
+            throw new Error("No mongoose.connectionUri specified in config")
+
+        db = mongoose.createConnection @config.mongoose.connectionUri
+        modelRoot = util.getFactoryFunction @config.mongoose.modelRoot, @config.here
+        modelRoot(db)
+
     configureDispatch: ->
         root = @getRootController()
         @app.get /\/(.*)/, (req, res, next) ->
@@ -37,6 +49,9 @@ class ServerFactory
                 @configureCoffeeCompilation()
 
             @configureStatic()
+
+        if @config.mongoose? and @config.mongoose.enabled
+            @configureMongoose()
 
         @configureDispatch()
 
