@@ -4,9 +4,40 @@ abort = (message) ->
 	console.error message
 	process.exit 1
 
-usage = """
-    \033[31;1mUsage\033[0m: robusta command [configuration] [options]
-"""
+sys = require 'sys'
+optparse = require 'optparse'
 
-abort usage
+switches = [
+    ['-h', '--help', 'Shows help']
+]
+
+results = {
+    'config': 'development.ini'
+}
+
+parser = new optparse.OptionParser switches
+parser.banner = "Usage: robusta [options] command [configfile]"
+
+usage = () ->
+    sys.puts parser.toString()
+    process.exit 1
+
+parser.on 'help', usage
+
+parser.on 2, (command) ->
+    results.command = command
+
+parser.on 3, (config) ->
+    results.config = config
+
+parser.parse(process.argv)
+
+if not results.command? or results.command != 'serve'
+    usage()
+
+boot = require('robusta').boot
+boot.initializeWithConfigFile results.config, (config, app) ->
+    app.listen 8000
+    console.log "Server listening to http://localhost:8000"
+
 
