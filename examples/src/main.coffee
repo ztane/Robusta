@@ -14,6 +14,8 @@ class TestController extends robusta.controller.Controller
         constructor: ->
                 @init()
 
+        subcontroller: new SubController()
+
         index: expose (req, res) ->
                 res.send "Hello world"
                 person = new model.Person { title: "Foobar Baz" }
@@ -22,6 +24,10 @@ class TestController extends robusta.controller.Controller
         foo: expose (req, res, parts) ->
                 res.send("Another method with the remaining URI components " + parts)
 
-        subcontroller: new SubController()
+        fb: expose (req, res) ->
+                if req.fb_session?
+                        res.send("You have logged in to facebook")
+                else
+                        res.send("You have not logged in to facebook")
 
 root.TestController = new TestController()

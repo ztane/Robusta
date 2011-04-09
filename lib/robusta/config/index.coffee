@@ -1,5 +1,6 @@
 root = exports ? this
 
+require 'move'
 express    = require 'express'
 path       = require 'path'
 util       = require 'robusta/lib/robusta/util'
@@ -40,6 +41,17 @@ class ServerFactory
         @app.get /\/(.*)/, (req, res, next) ->
             controller.dispatch(req, res, root, next)
 
+    configureFacebook: () ->
+        connect_facebook = require 'connect_facebook'
+
+        if not @config.facebook.appId?
+            throw new Error "No facebook.appId specified in config"
+
+        if not @config.facebook.appSecret?
+            throw new Error "No facebook.appSecret specified in config"
+
+        @app.use connect_facebook @config.facebook.appId, @config.facebook.appSecret
+
     createServer: (success) ->
         @app = express.createServer()
         @app.use express.bodyParser()
@@ -52,6 +64,9 @@ class ServerFactory
 
         if @config.mongoose? and @config.mongoose.enabled
             @configureMongoose()
+
+        if @config.facebook? and @config.facebook.enabled
+            @configureFacebook()
 
         @configureDispatch()
 
