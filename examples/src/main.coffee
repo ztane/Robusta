@@ -31,3 +31,16 @@ class TestController extends robusta.controller.Controller
                         res.send("You have not logged in to facebook")
 
 root.TestController = new TestController()
+
+context = createContext(translator)
+context.name = 'Fred'
+compiled = dust.compile """{#gettext}Hello  {~lb}  {~rb}  {name}  !  {/gettext} {#ngettext} asdfasdf  asdf asdf sdf {name} {:else}sdfasdasdfadf{/ngettext}""", "intro";
+dust.loadSource compiled
+dust.render "intro", context, (err, out) ->
+    console.log out
+dust.render "intro", context, (err, out) ->
+    console.log out
+
+
+
+

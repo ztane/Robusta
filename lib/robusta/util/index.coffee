@@ -2,6 +2,7 @@ root = exports ? this
 
 fs   = require 'fs'
 path = require 'path'
+merge = require './merge'
 
 root.getFactoryFunction = (name, here) ->
     loc = name.indexOf ':'
@@ -28,8 +29,26 @@ root.getFactoryFunction = (name, here) ->
 
     return resolved
 
-merge = require './merge'
+class HashMap
+    constructor: (content = {}) ->
+        @content = merge.shallowCopy(content)
 
+    get: (key) ->
+        if @content.hasOwnProperty key
+            return @content[key]
+        else
+            return undefined
+
+    put: (key, value) ->
+        @content[key] = value
+
+    hasKey: (key) ->
+        @content.hasOwnProperty(key)
+
+    keys: () ->
+        Object.keys @content
+
+exports.HashMap = HashMap
 exports.extend = merge.extend
 exports.isArray = merge.isArray
 exports.isFunction = merge.isFunction

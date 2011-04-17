@@ -36,6 +36,13 @@ class ServerFactory
         modelRoot = util.getFactoryFunction @config.mongoose.modelRoot, @config.here
         modelRoot(db)
 
+    getTemplateDirectory: ->
+        @getGlobalPath(@config.templating.templateDir or "templating")
+
+    configureTemplating: ->
+        templates = require 'robusta/templates'
+        templates.setTemplateDirectory @getTemplateDirectory
+
     configureDispatch: ->
         root = @getRootController()
         @app.get /\/(.*)/, (req, res, next) ->
@@ -68,7 +75,11 @@ class ServerFactory
         if @config.facebook? and @config.facebook.enabled
             @configureFacebook()
 
+        if @config.templating? and config.templating.enabled?
+            @configureTemplateLoader()
+
         @configureDispatch()
+        @createTemplateLoader()
 
         success(@app)
 
