@@ -2,7 +2,6 @@ root       = exports ? this
 robusta    = require 'robusta'
 expose     = robusta.controller.expose
 model      = require './model'
-dust       = require 'dust'
 
 class SubController extends robusta.controller.Controller
         constructor: ->
@@ -20,10 +19,10 @@ class TestController extends robusta.controller.Controller
         index: expose("base") (req, res) ->
                 person = new model.Person { title: "Foobar Baz" }
                 person.save()
-                res.render {}
+                res.render { }
 
         json: expose("json") (req, res, parts) ->
-                res.render { "description", "A view rendering json" }
+                res.render { "description": "A view rendering json" }
 
         fblogincheck: expose (req, res) ->
                 if req.fb_session?
