@@ -7,6 +7,12 @@
 {+body}
 <h1>Example</h1>
 <p>This is an example HTML document.</p>
+<ul>
+<li><a href="/json/">A json document</a></li>
+<li><a href="/fblogincheck/">Check if you are logged in to this application in facebook</a></li>
+<li><a href="/subcontroller/">A subcontroller with its own internal hierarchy</a></li>
+<li><a href="/subcontroller/subview">A subview in the subcontroller</a></li>
+</ul>
 {/body}
 </body>
 </html>

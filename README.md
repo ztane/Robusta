@@ -62,3 +62,10 @@ Requirements
 -   Express framework  (http://expressjs.com/)
 -   CoffeeScript 1.0 (http://jashkenas.github.com/coffee-script/)
 -   Dust (http://akdubya.github.com/dustjs/)
+
+Running the example
+===================
+
+-   run "npm link" in the package.json directory
+-   change to example subdirectory and run "robusta serve" (it defaults to 'development.ini')
+-   go to http://localhost:8000/ and enjoy

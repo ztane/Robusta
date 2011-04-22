@@ -10,6 +10,9 @@ class SubController extends robusta.controller.Controller
         index: expose (req, res) ->
                 res.render "Hello world from SubController"
 
+        subview: expose (req, res) ->
+                res.render "Hello world from SubController subview"
+
 class TestController extends robusta.controller.Controller
         constructor: ->
                 @init()
