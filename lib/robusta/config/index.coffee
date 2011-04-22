@@ -22,7 +22,7 @@ class ServerFactory
         if not @config.rootController
             throw new Error("No rootController specified in config")
 
-        util.getFactoryFunction(@config.rootController, @config.here)
+        util.getFactoryFunction @config.rootController, @config.here
 
     configureMongoose: ->
         mongoose = require 'mongoose'
@@ -45,7 +45,7 @@ class ServerFactory
 
     configureDispatch: ->
         root = @getRootController()
-        @app.get /\/(.*)/, (req, res, next) ->
+        @app.all /\/(.*)/, (req, res, next) ->
             controller.dispatch(req, res, root, next)
 
     configureFacebook: () ->
@@ -59,6 +59,21 @@ class ServerFactory
 
         @app.use connect_facebook @config.facebook.appId, @config.facebook.appSecret
 
+    configureI18N: () ->
+        i18n = require 'robusta/lib/robusta/i18n'
+
+        if @config.i18n and @config.i18n.enabled
+            if not @config.i18n.catalogDir?
+                throw new Error "No i18n.catalogDir specified in config"
+
+            i18n.setCatalogDirectory path.resolve @config.here, @config.i18n.catalogDir
+            @app.createTranslator = (languages) ->
+               i18n.createFallbackTranslator(languages)
+        else
+            @app.createTranslator = () ->
+               i19n.DummyTranslator
+
+
     createServer: (success) ->
         @app = express.createServer()
         @app.use express.bodyParser()
@@ -69,17 +84,18 @@ class ServerFactory
 
             @configureStatic()
 
-        if @config.mongoose? and @config.mongoose.enabled
+        if @config.mongoose and @config.mongoose.enabled
             @configureMongoose()
 
-        if @config.facebook? and @config.facebook.enabled
+        if @config.facebook and @config.facebook.enabled
             @configureFacebook()
 
-        if @config.templating? and @config.templating.enabled?
+        if @config.templating and @config.templating.enabled
             @configureTemplating()
+
+        @configureI18N()
 
         @configureDispatch()
         success(@app)
 
 root.ServerFactory = ServerFactory
-

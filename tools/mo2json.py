@@ -23,7 +23,10 @@ def mo_to_no(mofile):
     for msgid, trans in catalog.iteritems():
         if isinstance(msgid, tuple):
             forms = newcatalog.setdefault(msgid[0], [ None ] * numplurals)
-            forms[msgid[1]] = trans
+            try:
+                forms[msgid[1]] = trans
+            except:
+                print "Broken translation: ", msgid
         else:
             newcatalog[msgid] = trans
 

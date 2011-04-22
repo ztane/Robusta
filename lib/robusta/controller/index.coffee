@@ -92,6 +92,7 @@ class Controller
         thisMeth = () =>
             this[meth].apply(this, arguments)
 
+        res.translator = req.app.createTranslator ['zh_TW', 'en']
         (errorShield thisMeth).apply null, comps
         return
 

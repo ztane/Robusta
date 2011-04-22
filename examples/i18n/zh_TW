@@ -1,0 +1,17 @@
+{ "info": {
+"plural-forms": "nplurals=1; plural=0;", 
+"x-poedit-language": "Chinese", 
+"x-poedit-sourcecharset": "utf-8", 
+"content-type": "text/plain; charset=utf-8", 
+"nplurals": 1, 
+"mime-version": "1.0"
+}, "catalog": {
+"Today": "今天", 
+"Monday": "星期一", 
+"Tuesday": "星期二", 
+"Wednesday": "星期三", 
+"Thursday": "星期四", 
+"Friday": "星期五", 
+"Saturday": "星期六", 
+"Sunday": "星期日"
+} }

@@ -8,7 +8,9 @@ class SubController extends robusta.controller.Controller
                 @init()
 
         index: expose (req, res) ->
-                res.render "Hello world from SubController"
+                res.render("Hello world from SubController. Monday in" +
+                    " Traditional Chinese is " +
+                    res.translator.gettext "Monday")
 
         subview: expose (req, res) ->
                 res.render "Hello world from SubController subview"
