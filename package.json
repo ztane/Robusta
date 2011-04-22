@@ -13,9 +13,12 @@
   "keywords": ["framework", "turbogears", "web", "rest", "restful"],
   "repository": "git://github.com/ztane/Robusta",
   "main": "./lib/robusta/index",
-  "bin": { "robusta": "./bin/robusta" },
-  "bin": { "mo2no": "./tools/mo2no.py" },
-  "engines": { "node": ">= 0.4.1 < 0.5.0" },
+  "bin": { 
+    "robusta": "./bin/robusta", "mo2no": "./tools/mo2no.py" },
+  "engines": { 
+    "node": ">= 0.4.1 < 0.5.0",
+    "dust": ">= 0.3.0" 
+  },
   "directories": {
        "lib": "./lib"
   }
