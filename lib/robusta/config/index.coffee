@@ -37,11 +37,11 @@ class ServerFactory
         modelRoot(db)
 
     getTemplateDirectory: ->
-        @getGlobalPath(@config.templating.templateDir or "templating")
+        @getGlobalPath(@config.templating.templateDir or "templates")
 
     configureTemplating: ->
         templates = require 'robusta/templates'
-        templates.setTemplateDirectory @getTemplateDirectory
+        templates.setTemplateDirectory @getTemplateDirectory()
 
     configureDispatch: ->
         root = @getRootController()
@@ -75,12 +75,10 @@ class ServerFactory
         if @config.facebook? and @config.facebook.enabled
             @configureFacebook()
 
-        if @config.templating? and config.templating.enabled?
-            @configureTemplateLoader()
+        if @config.templating? and @config.templating.enabled?
+            @configureTemplating()
 
         @configureDispatch()
-        @createTemplateLoader()
-
         success(@app)
 
 root.ServerFactory = ServerFactory

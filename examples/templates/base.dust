@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{+title}No title defined{/title}</title>
+</head>
+<body>
+{+body}
+<h1>Example</h1>
+<p>This is an example HTML document.</p>
+{/body}
+</body>
+</html>

@@ -197,19 +197,6 @@ context_ngettext = (translator, chunk, context, bodies, params) ->
         else
             return renderNew(chunk, context, body, translated)
 
-translator = {}
-translator.gettext = (msgid) ->
-    if msgid == 'Hello  {~lb}  {~rb}  {name}  !  '
-        return 'Hulo  {~lb}  {~rb}  {name}  !  '
-
-    return str
-
-translator.ngettext = (msgid, msgidPlural, n) ->
-    if n == 1
-        return msgid
-
-    return msgidPlural
-
 createI18NContext = (translator, context) ->
     context = util.shallowCopy(context)
 
@@ -226,7 +213,8 @@ setTemplateDirectory = (path) ->
     templateDirectory = path
 
 dust.onLoad = (name, callback) ->
-    fs.readFile fs.resolve(name, templateDirectory), 'UTF-8', callback
+    tmpl = path.resolve(templateDirectory, name + ".dust")
+    fs.readFile tmpl, 'UTF-8', callback
 
 renderTemplate = (name, context, translator) ->
     if translator?
