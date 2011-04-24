@@ -8,7 +8,9 @@
   ],
   "dependencies": {
     "express":  ">= 2.0.0 < 3.0.0",
-    "mongoose": ">= 1.1.24 < 2.0.0"
+    "mongoose": ">= 1.1.24 < 2.0.0",
+    "dust": ">= 0.3.0 < 0.4.0",
+    "functools": ">= 1.0.0 < 1.1.0"
   },
   "keywords": ["framework", "turbogears", "web", "rest", "restful"],
   "repository": "git://github.com/ztane/Robusta",
@@ -16,8 +18,7 @@
   "bin": { 
     "robusta": "./bin/robusta", "mo2no": "./tools/mo2no.py" },
   "engines": { 
-    "node": ">= 0.4.1 < 0.5.0",
-    "dust": ">= 0.3.0" 
+    "node": ">= 0.4.1 < 0.5.0"
   },
   "directories": {
        "lib": "./lib"

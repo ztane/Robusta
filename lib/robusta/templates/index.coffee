@@ -73,9 +73,11 @@ class I18NChunk
     helper: () ->
         @gotError("No helpers allowed within i18n chunk")
 
-    getString: () ->
-        @textContents.join('')
+    toString: () ->
+        if not @string?
+            @string = @textContents.join('')
 
+        return @string
 
 createGetFunc = (name) ->
     (auto, filters) ->
@@ -133,11 +135,11 @@ tagmatcher = ///
            ([.]?[a-zA-Z_$][a-zA-Z0-9_$/]*)
         )
     \}
-|
+|m
     ( [{] )
 ///g
 
-createTranslatedBody = (body, translated) ->
+createTranslatedBody = (references, translated) ->
     bodyContent = []
     translated.replace tagmatcher, (all, plaintext, escapedbracket, reference, plainbracket) ->
         plaintext = '{' if escapedbracket == 'lb'
@@ -157,7 +159,7 @@ createTranslatedBody = (body, translated) ->
                 ops.push createWrite currentwrite.join ''
                 currentwrite = []
 
-            ops.push body.references[i.reference]
+            ops.push references[i.reference]
         else
             currentwrite.push i
 
@@ -166,11 +168,11 @@ createTranslatedBody = (body, translated) ->
 
     return ops
 
-renderNew = (chunk, context, body, translated) ->
-    cached = translationCache.get(translated)
+renderNew = (chunk, context, references, translated) ->
+    cached = translationCache.get translated
     if cached == undefined
-        cached = createTranslatedBody(body, translated)
-        translationCache.put(translated, cached)
+        cached = createTranslatedBody references, translated
+        translationCache.put translated, cached
 
     for i in cached
         chunk = i(chunk, context)
@@ -178,24 +180,49 @@ renderNew = (chunk, context, body, translated) ->
     chunk
 
 context_gettext = (translator, chunk, context, bodies, params) ->
-        body = getBody(bodies.block)
-        toGettext = body.getString()
-        translated = translator.gettext(toGettext)
-        if toGettext == translated
-            chunk.render(bodies.block, context)
-        else
-            return renderNew(chunk, context, body, translated)
+    body = getBody(bodies.block)
+    toGettext = body.toString()
+    translated = translator.gettext(toGettext)
+    if toGettext == translated
+        chunk.render(bodies.block, context)
+    else
+        return renderNew(chunk, context, body, translated)
+
+class GetNgettextNumberChunk
+    constructor: () ->
+        @text = ''
+
+    reference: (data, ctx, filters) ->
+        # TODO: warn about errors
+        @text += data
+        this
+
+    write: (text) ->
+        @text += text
+        this
 
 context_ngettext = (translator, chunk, context, bodies, params) ->
-        singular = getBody(bodies.block)
-        plural = getBody(bodies['else'])
-        translated = translator.ngettext(singular, plural, 1)
-        if translated == singular
-            return chunk.render(bodies.block, context)
-        else if translated == plural
-            return chunk.render(bodies['else'], context)
-        else
-            return renderNew(chunk, context, body, translated)
+    number = params["n"]
+
+    # reference the contents... the number is 0 if async,
+    # TODO: warn in this case...
+    if typeof(number) == 'function'
+        chk = new GetNgettextNumberChunk()
+        number(chk, context)
+        number = +chk.text
+
+    singular = getBody(bodies.block)
+    plural = getBody(bodies['plural'])
+    util.extend singular.references, plural.references
+
+    translated = translator.ngettext(singular.toString(), plural.toString(), number)
+
+    if translated == singular
+        return chunk.render(bodies.block, context)
+    else if translated == plural
+        return chunk.render(bodies['plural'], context)
+    else
+        return renderNew(chunk, context, singular.references, translated)
 
 createI18NContext = (translator, context) ->
     context = util.shallowCopy(context)
@@ -203,8 +230,12 @@ createI18NContext = (translator, context) ->
     context.gettext = (chunk, context, bodies, params) ->
         context_gettext(translator, chunk, context, bodies, params)
 
+    context._ = context.gettext
+
     context.ngettext = (chunk, context, bodies, params) ->
         context_ngettext(translator, chunk, context, bodies, params)
+
+    context._n = context.ngettext
 
     return context
 

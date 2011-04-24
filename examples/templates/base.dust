@@ -13,6 +13,22 @@
 <li><a href="/subcontroller/">A subcontroller with its own internal hierarchy</a></li>
 <li><a href="/subcontroller/subview">A subview in the subcontroller</a></li>
 </ul>
+<h1>l10n example</h1>
+<h2>Weekdays</h2>
+<ul>
+<li>{#_}Monday{/_}</li>
+<li>{#_}Tuesday{/_}</li>
+<li>{#_}Wednesday{/_}</li>
+<li>{#_}Thursday{/_}</li>
+<li>{#_}Friday{/_}</li>
+<li>{#_}Saturday{/_}</li>
+<li>{#_}Sunday{/_}</li>
+</ul>
+<h1>ngettext example: counting number of files</h1>
+<ul>
+{#counts}<li>{#_n n=number}{number} file{:plural}{number} files{/_n}</li>{/counts}
+</ul>
+
 {/body}
 </body>
 </html>

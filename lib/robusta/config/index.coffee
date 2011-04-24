@@ -5,6 +5,15 @@ express    = require 'express'
 path       = require 'path'
 util       = require 'robusta/lib/robusta/util'
 controller = require 'robusta/lib/robusta/controller'
+i18n       = require 'robusta/lib/robusta/i18n'
+
+createTranslator = (app, req, res) ->
+    res.getTrans = () ->
+        if not res._translator?
+            languages = i18n.getAcceptedLanguages req
+            res._translator = app.createTranslator languages
+
+        return res._translator
 
 class ServerFactory
     constructor: (@config) ->
@@ -45,7 +54,9 @@ class ServerFactory
 
     configureDispatch: ->
         root = @getRootController()
+        app = @app
         @app.all /\/(.*)/, (req, res, next) ->
+            createTranslator(app, req, res)
             controller.dispatch(req, res, root, next)
 
     configureFacebook: () ->

@@ -30,6 +30,7 @@ dummyTranslator =
     ngettext: (msg, msgPlural, n) ->
         n == 1 and msg or msgPlural
 
+# this method is attached to express ServerResponse
 renderTemplate = (context) ->
     template = @_exposed.template
 
@@ -47,7 +48,8 @@ renderTemplate = (context) ->
     else if template?
         # create a new context dictionary
         context = util.extend {}, @locals(), context
-        streamInterface = templates.renderTemplate template, context, dummyTranslator
+        translator = @getTrans()
+        streamInterface = templates.renderTemplate template, context, translator
 
         streamInterface.on "data", (data) =>
            @write(data)
@@ -92,7 +94,7 @@ class Controller
         thisMeth = () =>
             this[meth].apply(this, arguments)
 
-        res.translator = req.app.createTranslator ['zh_TW', 'en']
+        res.translator = req.app.createTranslator []
         (errorShield thisMeth).apply null, comps
         return
 

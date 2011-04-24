@@ -1,6 +1,7 @@
-util = require "robusta/lib/robusta/util"
-fs   = require "fs"
-path = require "path"
+util      = require "robusta/lib/robusta/util"
+fs        = require "fs"
+path      = require "path"
+functools = require "functools"
 
 notTranslated = new util.HashMap()
 translators   = new util.HashMap()
@@ -17,7 +18,7 @@ catalogDir    = ''
 normalizeLanguage = (language) ->
     language = language.replace /[-.\/]/g, '_'
     parts = /^([a-z0-9]+)(?:_(.*))/i.exec(language)
-    if parts[1]?
+    if parts and parts[1]?
         language = parts[1].toLowerCase()
         if parts[2]
             language += "_" + parts[2].toUpperCase()
@@ -46,8 +47,8 @@ class Translator
         if typeof(t) == 'string'
             return t
 
-        if t and t.length?
-            form = @getPluralForm(n)
+        if Array.isArray(t)
+            form = +@getPluralForm(n)
             return t[form]
 
         return null
@@ -125,21 +126,30 @@ class FallbackTranslator
             translator = getTranslator i
             translator and @translators.push translator
 
-    gettext: (msg) ->
+        @_createClosures()
+
+    _createClosures: () ->
+        # create detachable closures
+        @gettext = (msg) => @_gettext(msg)
+        @ngettext = (msg, msgPlural, n) => @_ngettext(msg, msgPlural, n)
+        @pgettext = (c, msg) => @_pgettext(c, msg)
+        @npgettext = (c, msg, msgPlural, n) => @_npgettext(c, msg, msgPlural, n)
+
+    _gettext: (msg) ->
         for i in @translators
             m = i.gettext(msg)
             return m if m?
 
         msg
 
-    ngettext: (msg, msgPlural, n) ->
+    _ngettext: (msg, msgPlural, n) ->
         for i in @translators
             m = i.ngettext msg, msgPlural, n
             return m if m?
 
         n == 1 and msg or msgPlural
 
-    pgettext: (context, msg) ->
+    _pgettext: (context, msg) ->
         cmsg = context + "\004" + msg
         t = @gettext cmsg
 
@@ -148,13 +158,58 @@ class FallbackTranslator
 
         t
 
-    pngettext: (context, msg, msgPlural, n) ->
+    _npgettext: (context, msg, msgPlural, n) ->
         cmsg = context + "\004" + msg
         t = @ngettext msg, msgPlural, n
         if t == cmsg
             return msg
 
         t
+
+# matches a value with optional quality
+qualityRe = /^([^;]*)(;q=([0-9.]+))?/
+
+# match ll_cc case insensitively
+isoCodeMatch = /^([a-z][a-z])_([a-z][a-z])$/
+
+parseAcceptLanguage = (req) ->
+    # give the default language as en, for now...
+    acceptLanguage = req.header 'Accept-Language', 'en'
+
+    # remove spaces and replace dash with underscore
+    acceptLanguage = acceptLanguage.replace(/\s+/g, '').replace(/-/g, '_')
+
+    parts = acceptLanguage.split /,/
+    langs = functools.map(((el, idx) ->
+        q = 1
+        groups = qualityRe.exec el
+        if groups.length >= 4
+            q = +groups[3]
+
+        lang = groups[1]
+        groups = /^([a-z][a-z])_([a-z][a-z])$/.exec lang
+        if groups? and groups.length
+            lang = groups[1] + "_" + groups[2].toUpperCase()
+
+        return {
+            lang: lang,
+            idx: idx,
+            q: q
+        }),
+        parts
+    )
+
+    # sort by quality DESC, idx ASC
+    langs.sort (a, b) ->
+        b.q - a.q or a.idx - b.idx;
+
+    (el.lang for el in langs)
+
+exports.getAcceptedLanguages = (req) ->
+    if not req.parsedAcceptedLanguages?
+        req.parsedAcceptedLanguages = parseAcceptLanguage(req)
+
+    return req.parsedAcceptedLanguages
 
 exports.createFallbackTranslator = (languages) ->
     new FallbackTranslator(languages)

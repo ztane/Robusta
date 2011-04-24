@@ -24,7 +24,9 @@ class TestController extends robusta.controller.Controller
         index: expose("base") (req, res) ->
                 person = new model.Person { title: "Foobar Baz" }
                 person.save()
-                res.render { }
+
+                counts = ({ number: i } for i in [0..10]) 
+                res.render counts: counts
 
         json: expose("json") (req, res, parts) ->
                 res.render { "description": "A view rendering json" }
