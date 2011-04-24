@@ -1,0 +1,18 @@
+{ "info": {
+"plural-forms": "nplurals=2; plural=(n != 1);", 
+"x-poedit-language": "Finnish", 
+"x-poedit-sourcecharset": "utf-8", 
+"content-type": "text/plain; charset=utf-8", 
+"nplurals": 1, 
+"mime-version": "1.0"
+}, "catalog": {
+"Today": "tänään", 
+"Monday": "maanantai", 
+"Tuesday": "tiistai", 
+"Wednesday": "keskiviikko", 
+"Thursday": "torstai", 
+"Friday": "perjantai", 
+"Saturday": "lauantai", 
+"Sunday": "sunnuntai",
+"{number} file": ["{number} tiedosto", "{number} tiedostoa"]
+} }
